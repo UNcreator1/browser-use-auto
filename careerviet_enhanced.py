@@ -26,9 +26,9 @@ from pydantic import SecretStr, Field, ConfigDict
 
 class GeminiFlashLLM(ChatGoogleGenerativeAI):
     """Custom wrapper for Gemini Flash to ensure compatibility with browser-use"""
-    model_config = ConfigDict(extra='allow')
+    model_config = ConfigDict(extra='allow', populate_by_name=True)
     
-    model_name: str = Field(default="gemini-2.0-flash-exp")
+    model_name: str = Field(default="gemini-2.0-flash-exp", alias="model")
     provider: str = Field(default="google")
 
     def __init__(self, api_key: str):
