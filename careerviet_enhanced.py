@@ -21,27 +21,32 @@ if '.' in sys.path:
     sys.path.remove('.')
 
 from browser_use import Agent, Browser
-from langchain_openai import ChatOpenAI
-from pydantic import Field, ConfigDict, SecretStr
+from langchain_google_genai import ChatGoogleGenerativeAI, HarmBlockThreshold, HarmCategory
+from pydantic import SecretStr, Field, ConfigDict
 
-class GeminiOpenAI(ChatOpenAI):
-    """Custom wrapper for Gemini via OpenAI compatibility layer"""
+class GeminiFlashLLM(ChatGoogleGenerativeAI):
+    """Custom wrapper for Gemini Flash with safety settings disabled"""
     model_config = ConfigDict(extra='allow', populate_by_name=True)
-    provider: str = Field(default="openai")
-    model: str = Field(default="gemini-1.5-flash-latest")
+    
+    model_name: str = Field(default="gemini-1.5-flash", alias="model")
+    provider: str = Field(default="google")
 
     def __init__(self, api_key: str):
         super().__init__(
-            model="gemini-1.5-flash-latest",
-            api_key=SecretStr(api_key),
-            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+            model="gemini-1.5-flash",
+            google_api_key=SecretStr(api_key),
             temperature=0.0,
+            safety_settings={
+                HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+                HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+            },
         )
-        self.model = "gemini-1.5-flash-latest"
 
 def get_gemini_llm(api_key: str):
-    """Get Gemini Flash using OpenAI compatibility layer"""
-    return GeminiOpenAI(api_key=api_key)
+    """Get Gemini Flash with safety settings"""
+    return GeminiFlashLLM(api_key=api_key)
 
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
     """Load task from external file"""
@@ -126,7 +131,7 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
                 disable_security=False,
             )
             
-            # Initialize Gemini Flash via OpenAI compatibility
+            # Initialize Gemini Flash with safety settings
             llm = get_gemini_llm(api_key=api_key)
             
             # Create agent
@@ -134,7 +139,7 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
                 task=task,
                 llm=llm,
                 browser=browser,
-                use_vision=True,  # Re-enable vision with stable model
+                use_vision=False,  # Disable vision to ensure JSON stability
                 max_actions_per_step=10
             )
             
