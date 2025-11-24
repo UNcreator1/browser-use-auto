@@ -22,10 +22,12 @@ if '.' in sys.path:
 
 from browser_use import Agent, Browser
 from langchain_google_genai import ChatGoogleGenerativeAI
-from pydantic import SecretStr, Field
+from pydantic import SecretStr, Field, ConfigDict
 
 class GeminiFlashLLM(ChatGoogleGenerativeAI):
     """Custom wrapper for Gemini Flash to ensure compatibility with browser-use"""
+    model_config = ConfigDict(extra='allow')
+    
     model_name: str = Field(default="gemini-2.0-flash-exp")
     provider: str = Field(default="google")
 
