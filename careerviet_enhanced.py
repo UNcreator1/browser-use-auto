@@ -112,6 +112,11 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
                 google_api_key=api_key
             )
             
+            # Add provider attribute to make it compatible with browser-use
+            # This is a workaround for the browser-use package checking llm.provider
+            if not hasattr(llm, 'provider'):
+                llm.provider = 'google'  # Add the missing attribute
+            
             # Create agent
             agent = Agent(
                 task=task,
