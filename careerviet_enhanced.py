@@ -21,22 +21,16 @@ if '.' in sys.path:
     sys.path.remove('.')
 
 from browser_use import Agent, Browser
-from langchain_google_genai import ChatGoogleGenerativeAI
-from pydantic import SecretStr, Field, ConfigDict
+from langchain_openai import ChatOpenAI
 
-class GeminiFlashLLM(ChatGoogleGenerativeAI):
-    """Custom wrapper for Gemini Flash to ensure compatibility with browser-use"""
-    model_config = ConfigDict(extra='allow', populate_by_name=True)
-    
-    model_name: str = Field(default="gemini-2.0-flash-exp", alias="model")
-    provider: str = Field(default="google")
-
-    def __init__(self, api_key: str):
-        super().__init__(
-            model="gemini-2.0-flash-exp",
-            google_api_key=SecretStr(api_key),
-            temperature=0.0,
-        ) 
+def get_gemini_llm(api_key: str):
+    """Get Gemini Flash using OpenAI compatibility layer"""
+    return ChatOpenAI(
+        model="gemini-2.0-flash-exp",
+        api_key=api_key,
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        temperature=0.0,
+    ) 
 
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
     """Load task from external file"""
@@ -121,8 +115,8 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
                 disable_security=False,
             )
             
-            # Initialize Gemini Flash LLM
-            llm = GeminiFlashLLM(api_key=api_key)
+            # Initialize Gemini Flash via OpenAI compatibility
+            llm = get_gemini_llm(api_key=api_key)
             
             # Create agent
             agent = Agent(
