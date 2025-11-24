@@ -1,0 +1,54 @@
+name: CareerViet Enhanced Auto Apply
+
+on:
+  schedule:
+    # Run every day at 9 AM Vietnam time (2 AM UTC)
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  auto-apply:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      
+      - name: Install dependencies
+        run: |
+          uv pip install --system python-dotenv langchain-google-genai browser-use playwright
+      
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+          playwright install-deps chromium
+      
+      - name: Run CareerViet Enhanced Automation
+        env:
+          GOOGLE_API_KEY_1: ${{ secrets.GOOGLE_API_KEY_1 }}
+          GOOGLE_API_KEY_2: ${{ secrets.GOOGLE_API_KEY_2 }}
+          GOOGLE_API_KEY_3: ${{ secrets.GOOGLE_API_KEY_3 }}
+          HEADLESS: true
+        run: |
+          cd browser-use-crontab
+          python careerviet_enhanced.py
+      
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: careerviet-enhanced-results-${{ github.run_number }}
+          path: |
+            browser-use-crontab/results/
+            browser-use-crontab/*.log
+          retention-days: 30
