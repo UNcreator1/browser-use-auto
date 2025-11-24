@@ -1,16 +1,16 @@
-Truy cập trang https://careerviet.vn
+Truy cập trang https://www.vietnamworks.com
 
 Đăng nhập với:
 - Email: nphuhoangha@gmail.com  
 - Mật khẩu: Giapthin@123
 
 Sau khi đăng nhập, tìm kiếm và ứng tuyển:
-- Vị trí: "quan ly" hoặc "quan ly cap cao"
-- Lương: >= 50,000,000 VND (tương đương $2000 USD)
+- Vị trí: "manager" hoặc "senior manager"
+- Lương: >= $2000 USD
 
 Tự động ứng tuyển TẤT CẢ các công việc phù hợp:
 1. Click vào mỗi tin tuyển dụng
-2. Click nút "Ứng tuyển"
+2. Click nút "Apply" hoặc "Ứng tuyển"
 3. Điền các thông tin cần thiết (nếu có)
 4. Gửi đơn ứng tuyển
 5. Quay lại kết quả tìm kiếm và tiếp tục
