@@ -39,7 +39,7 @@ class CompatibleGeminiLLM:
         self.model_name = "gemini-2.0-flash-exp"  # browser-use looks for this
     
     def __getattr__(self, name):
-        """Delegate all other attributes to the wrapped LLM"""
+        """Delegate all other attributes and methods to the wrapped LLM"""
         # First check if the wrapped LLM has it
         if hasattr(self.llm, name):
             return getattr(self.llm, name)
@@ -126,14 +126,6 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
             browser = Browser(
                 headless=headless,
                 disable_security=False,  # Keep security enabled for better compatibility
-                extra_chromium_args=[
-                    '--disable-blink-features=AutomationControlled',
-                    '--disable-dev-shm-usage',
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-web-security',
-                    '--disable-features=IsolateOrigins,site-per-process',
-                ],
             )
             
             # Initialize LLM with wrapper for compatibility
