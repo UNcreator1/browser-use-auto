@@ -33,12 +33,18 @@ class CompatibleGeminiLLM:
             temperature=0.0,
             google_api_key=api_key
         )
-        self.provider = 'google'  # Add provider attribute
+        # Add attributes that browser-use expects
+        self.provider = 'google'
         self.model = "gemini-2.0-flash-exp"
+        self.model_name = "gemini-2.0-flash-exp"  # browser-use looks for this
     
     def __getattr__(self, name):
         """Delegate all other attributes to the wrapped LLM"""
-        return getattr(self.llm, name)
+        # First check if the wrapped LLM has it
+        if hasattr(self.llm, name):
+            return getattr(self.llm, name)
+        # If not, raise a more helpful error
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
 
 
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
