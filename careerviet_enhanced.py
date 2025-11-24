@@ -24,6 +24,23 @@ from browser_use import Agent, Browser
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 
+class CompatibleGeminiLLM:
+    """Wrapper to make ChatGoogleGenerativeAI compatible with browser-use"""
+    
+    def __init__(self, api_key: str):
+        self.llm = ChatGoogleGenerativeAI(
+            model="gemini-2.0-flash-exp",
+            temperature=0.0,
+            google_api_key=api_key
+        )
+        self.provider = 'google'  # Add provider attribute
+        self.model = "gemini-2.0-flash-exp"
+    
+    def __getattr__(self, name):
+        """Delegate all other attributes to the wrapped LLM"""
+        return getattr(self.llm, name)
+
+
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
     """Load task from external file"""
     task_path = Path(__file__).parent / task_file
@@ -105,17 +122,8 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
                 disable_security=True,
             )
             
-            # Initialize LLM with current API key
-            llm = ChatGoogleGenerativeAI(
-                model="gemini-2.0-flash-exp",
-                temperature=0.0,
-                google_api_key=api_key
-            )
-            
-            # Add provider attribute to make it compatible with browser-use
-            # This is a workaround for the browser-use package checking llm.provider
-            if not hasattr(llm, 'provider'):
-                llm.provider = 'google'  # Add the missing attribute
+            # Initialize LLM with wrapper for compatibility
+            llm = CompatibleGeminiLLM(api_key=api_key)
             
             # Create agent
             agent = Agent(
