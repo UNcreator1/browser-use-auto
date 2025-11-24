@@ -9,8 +9,16 @@ Features:
 
 import asyncio
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
+
+# Ensure we don't import the local browser_use folder
+# Remove current directory from path to force using installed package
+if '' in sys.path:
+    sys.path.remove('')
+if '.' in sys.path:
+    sys.path.remove('.')
 
 from browser_use import Agent, Browser
 from langchain_google_genai import ChatGoogleGenerativeAI
