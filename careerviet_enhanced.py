@@ -9,12 +9,8 @@ Features:
 
 import asyncio
 import os
-import sys
 from datetime import datetime
 from pathlib import Path
-
-# Add parent directory to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from browser_use import Agent, Browser
 from langchain_google_genai import ChatGoogleGenerativeAI
