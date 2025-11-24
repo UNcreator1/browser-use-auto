@@ -20,31 +20,10 @@ if '' in sys.path:
 if '.' in sys.path:
     sys.path.remove('.')
 
-from browser_use import Agent, Browser
-from langchain_google_genai import ChatGoogleGenerativeAI
+from browser_use import Agent, Browser, ChatBrowserUse
 
 
-class CompatibleGeminiLLM:
-    """Wrapper to make ChatGoogleGenerativeAI compatible with browser-use"""
-    
-    def __init__(self, api_key: str):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash-exp",
-            temperature=0.0,
-            google_api_key=api_key
-        )
-        # Add attributes that browser-use expects
-        self.provider = 'google'
-        self.model = "gemini-2.0-flash-exp"
-        self.model_name = "gemini-2.0-flash-exp"  # browser-use looks for this
-    
-    def __getattr__(self, name):
-        """Delegate all other attributes and methods to the wrapped LLM"""
-        # First check if the wrapped LLM has it
-        if hasattr(self.llm, name):
-            return getattr(self.llm, name)
-        # If not, raise a more helpful error
-        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+
 
 
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
@@ -62,7 +41,7 @@ def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
 
 
 def load_api_keys(keys_file: str = "tasks/api_keys.txt") -> list[str]:
-    """Load multiple API keys from file or environment"""
+    """Load multiple ChatBrowserUse API keys from file or environment"""
     keys_path = Path(__file__).parent / keys_file
     api_keys = []
     
@@ -128,8 +107,8 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
                 disable_security=False,  # Keep security enabled for better compatibility
             )
             
-            # Initialize LLM with wrapper for compatibility
-            llm = CompatibleGeminiLLM(api_key=api_key)
+            # Initialize ChatBrowserUse LLM (optimized for browser-use, uses API key)
+            llm = ChatBrowserUse(api_key=api_key)
             
             # Create agent
             agent = Agent(
