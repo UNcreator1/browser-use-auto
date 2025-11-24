@@ -25,12 +25,15 @@ from langchain_openai import ChatOpenAI
 
 def get_gemini_llm(api_key: str):
     """Get Gemini Flash using OpenAI compatibility layer"""
-    return ChatOpenAI(
+    llm = ChatOpenAI(
         model="gemini-2.0-flash-exp",
         api_key=api_key,
         base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
         temperature=0.0,
-    ) 
+    )
+    # Add provider attribute for browser-use compatibility
+    llm.provider = "openai"
+    return llm 
 
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
     """Load task from external file"""
