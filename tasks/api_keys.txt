@@ -1,0 +1,16 @@
+# API Keys Configuration
+# Add multiple API keys (one per line)
+# The system will try them in order if one fails
+
+# Primary Gemini API Key
+GOOGLE_API_KEY_1=your-primary-key-here
+
+# Backup Gemini API Key
+GOOGLE_API_KEY_2=your-backup-key-here
+
+# Additional Backup
+GOOGLE_API_KEY_3=your-third-key-here
+
+# You can add more keys as needed
+# GOOGLE_API_KEY_4=...
+# GOOGLE_API_KEY_5=...
