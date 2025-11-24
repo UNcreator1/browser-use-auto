@@ -35,9 +35,19 @@ def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
 
 
 def load_api_keys(keys_file: str = "tasks/api_keys.txt") -> list[str]:
-    """Load multiple API keys from file"""
+    """Load multiple API keys from file or environment"""
     keys_path = Path(__file__).parent / keys_file
     api_keys = []
+    
+    # First, check for API_KEYS environment variable (supports multiple keys)
+    api_keys_env = os.getenv("API_KEYS")
+    if api_keys_env:
+        # Split by newline or comma
+        for key in api_keys_env.replace(',', '\n').split('\n'):
+            key = key.strip()
+            if key and not key.startswith('#'):
+                api_keys.append(key)
+        print(f"✅ Loaded {len(api_keys)} key(s) from API_KEYS environment variable")
     
     # Try to load from file
     if keys_path.exists():
@@ -50,12 +60,13 @@ def load_api_keys(keys_file: str = "tasks/api_keys.txt") -> list[str]:
                     if '=' in line:
                         key = line.split('=', 1)[1].strip()
                         if key and key != 'your-primary-key-here' and key != 'your-backup-key-here' and key != 'your-third-key-here':
-                            api_keys.append(key)
+                            if key not in api_keys:
+                                api_keys.append(key)
     
-    # Also check environment variables
+    # Also check individual environment variables
     for i in range(1, 10):  # Check up to 10 keys
         env_key = os.getenv(f"GOOGLE_API_KEY_{i}")
-        if env_key:
+        if env_key and env_key not in api_keys:
             api_keys.append(env_key)
     
     # Fallback to single GOOGLE_API_KEY
