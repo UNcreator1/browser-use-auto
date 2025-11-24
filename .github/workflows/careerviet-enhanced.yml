@@ -41,7 +41,6 @@ jobs:
           GOOGLE_API_KEY_3: ${{ secrets.GOOGLE_API_KEY_3 }}
           HEADLESS: true
         run: |
-          cd browser-use-crontab
           python careerviet_enhanced.py
       
       - name: Upload results
@@ -50,6 +49,6 @@ jobs:
         with:
           name: careerviet-enhanced-results-${{ github.run_number }}
           path: |
-            browser-use-crontab/results/
-            browser-use-crontab/*.log
+            results/
+            *.log
           retention-days: 30
