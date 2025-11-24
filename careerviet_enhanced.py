@@ -122,10 +122,18 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
             print(f"🔑 Attempting with API key #{i}/{len(api_keys)}")
             print(f"{'=' * 70}")
             
-            # Initialize browser
+            # Initialize browser with stealth settings
             browser = Browser(
                 headless=headless,
-                disable_security=True,
+                disable_security=False,  # Keep security enabled for better compatibility
+                extra_chromium_args=[
+                    '--disable-blink-features=AutomationControlled',
+                    '--disable-dev-shm-usage',
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-web-security',
+                    '--disable-features=IsolateOrigins,site-per-process',
+                ],
             )
             
             # Initialize LLM with wrapper for compatibility
