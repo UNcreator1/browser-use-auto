@@ -28,6 +28,7 @@ class GeminiOpenAI(ChatOpenAI):
     """Custom wrapper for Gemini via OpenAI compatibility layer"""
     model_config = ConfigDict(extra='allow', populate_by_name=True)
     provider: str = Field(default="openai")
+    model: str = Field(default="gemini-2.0-flash-exp")
 
     def __init__(self, api_key: str):
         super().__init__(
@@ -36,6 +37,7 @@ class GeminiOpenAI(ChatOpenAI):
             base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
             temperature=0.0,
         )
+        self.model = "gemini-2.0-flash-exp"
 
 def get_gemini_llm(api_key: str):
     """Get Gemini Flash using OpenAI compatibility layer"""
