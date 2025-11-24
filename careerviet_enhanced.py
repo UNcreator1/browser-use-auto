@@ -101,10 +101,11 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
             print(f"🔑 Attempting with API key #{i}/{len(api_keys)}")
             print(f"{'=' * 70}")
             
-            # Initialize browser with stealth settings
+            # Initialize browser with Browser Use Cloud for stealth (bypasses IP blocks & CAPTCHAs)
             browser = Browser(
                 headless=headless,
-                disable_security=False,  # Keep security enabled for better compatibility
+                disable_security=False,
+                use_cloud=True,  # Use Browser Use Cloud for stealth browsing
             )
             
             # Initialize ChatBrowserUse LLM (optimized for browser-use, uses API key)
