@@ -20,11 +20,20 @@ if '' in sys.path:
 if '.' in sys.path:
     sys.path.remove('.')
 
-from browser_use import Agent, Browser, ChatBrowserUse
+from browser_use import Agent, Browser
+from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import SecretStr
 
-
-
-
+class GeminiFlashLLM(ChatGoogleGenerativeAI):
+    """Custom wrapper for Gemini Flash to ensure compatibility with browser-use"""
+    def __init__(self, api_key: str):
+        super().__init__(
+            model="gemini-2.0-flash-exp",
+            google_api_key=SecretStr(api_key),
+            temperature=0.0,
+        )
+        # Add attributes that browser-use checks for
+        self.model_name = "gemini-2.0-flash-exp" 
 
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
     """Load task from external file"""
@@ -41,7 +50,7 @@ def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
 
 
 def load_api_keys(keys_file: str = "tasks/api_keys.txt") -> list[str]:
-    """Load multiple ChatBrowserUse API keys from file or environment"""
+    """Load multiple Gemini API keys from file or environment"""
     keys_path = Path(__file__).parent / keys_file
     api_keys = []
     
@@ -109,8 +118,8 @@ async def run_with_retry(task: str, api_keys: list[str], headless: bool = True) 
                 disable_security=False,
             )
             
-            # Initialize ChatBrowserUse LLM (optimized for browser-use, uses API key)
-            llm = ChatBrowserUse(api_key=api_key)
+            # Initialize Gemini Flash LLM
+            llm = GeminiFlashLLM(api_key=api_key)
             
             # Create agent
             agent = Agent(
