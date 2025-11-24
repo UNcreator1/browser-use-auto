@@ -22,18 +22,19 @@ if '.' in sys.path:
 
 from browser_use import Agent, Browser
 from langchain_google_genai import ChatGoogleGenerativeAI
-from pydantic import SecretStr
+from pydantic import SecretStr, Field
 
 class GeminiFlashLLM(ChatGoogleGenerativeAI):
     """Custom wrapper for Gemini Flash to ensure compatibility with browser-use"""
+    model_name: str = Field(default="gemini-2.0-flash-exp")
+    provider: str = Field(default="google")
+
     def __init__(self, api_key: str):
         super().__init__(
             model="gemini-2.0-flash-exp",
             google_api_key=SecretStr(api_key),
             temperature=0.0,
-        )
-        # Add attributes that browser-use checks for
-        self.model_name = "gemini-2.0-flash-exp" 
+        ) 
 
 def load_task_from_file(task_file: str = "tasks/careerviet_task.txt") -> str:
     """Load task from external file"""
